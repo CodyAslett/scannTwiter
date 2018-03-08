@@ -4,12 +4,7 @@ import com.google.gson.Gson;
 import twitter4j.*;
 import twitter4j.conf.ConfigurationBuilder;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
-
-import java.util.Scanner;
+import java.util.*;
 
 
 public class TweetLoader {
@@ -74,14 +69,13 @@ public class TweetLoader {
     }
 
 
-    public void retrieveUserTweets(String name) throws TwitterException {
-        System.out.println("read user :" + name);
+    public List retrieveUserTweets(String name) throws TwitterException {
+        List<String> out = new LinkedList<>();
         Paging paging = new Paging(1, 100);
-        String userName = "google";
         List<Status> statuses = this.twitter.getUserTimeline(name, paging);
         for(Status status : statuses) {
-            System.out.println(status.getUser().getName() +"(" +status.getUser().getId() + ") :" + status.getText());
+            out.add(status.getText());
         }
-        System.out.println("END user :" + name);
+        return out;
     }
 }

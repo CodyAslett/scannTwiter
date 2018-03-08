@@ -11,6 +11,7 @@ public class Main {
     //private variables
     private static String hashtag = "#byui";
     private static Map<String, BYUITweet> map;
+    private static TweetLoader tweetLoader = new TweetLoader();
 
     /***
      *
@@ -21,10 +22,7 @@ public class Main {
     public static void main(String[] args) throws TwitterException {
         Gson g = new Gson();
 
-
-        TweetLoader tweetLoader = new TweetLoader();
         map = tweetLoader.retrieveTweetsWithHashTag(hashtag);
-        tweetLoader.retrieveUserTweets("google");
 
         List<String> list;
         list = mapToList(map);
@@ -67,6 +65,17 @@ public class Main {
         for (int i = 0; i <list.size(); i++) {
             //System.out.println(list.get(i)) + " ( " + map.get(list.get(i)).getUser().followers + " Followers - " + map.get(list.get(i)).text);
             System.out.println(list.get(i));
+            //System.out.println("User :" + );
+            try {
+                List tweets = tweetLoader.retrieveUserTweets(list.get(i));
+
+                for(Object tweetInfo: tweets) {
+                    System.out.println("\t " + tweetInfo);
+                }
+            }
+            catch (Exception e) {
+                System.out.println(e);
+            }
         }
     }
 
