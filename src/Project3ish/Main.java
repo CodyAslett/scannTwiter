@@ -3,16 +3,17 @@ package Project3ish;
 import com.google.gson.Gson;
 import twitter4j.*;
 
+import java.lang.reflect.Field;
 import java.util.*;
 
 
 public class Main {
 
     //private variables
-    private static String hashtag = "#byui";
+    private static String hashtag = "#sick";
     private static Map<String, BYUITweet> map;
     private static TweetLoader tweetLoader = new TweetLoader();
-
+    private static SaveUserStatus saver = new SaveUserStatus();
     /***
      *
      * @param args
@@ -23,10 +24,13 @@ public class Main {
         Gson g = new Gson();
 
         map = tweetLoader.retrieveTweetsWithHashTag(hashtag);
-
+        tweetLoader.retrieveLimit();
         List<String> list;
         list = mapToList(map);
-        display(map, list);
+        SaveUserStatus.display(map, list);
+        SaveUserStatus.saveFile(map, list);
+
+        //display(map, list);
     }
 
 
@@ -57,20 +61,16 @@ public class Main {
             }
         });
 
-        //for (BYUITweet value : map.values()) {
-        //System.out.println(value.getUser().getName() + " (" + value.getUser().followers + " Followers) - "  + value.text);
-        
-
 
         for (int i = 0; i <list.size(); i++) {
             //System.out.println(list.get(i)) + " ( " + map.get(list.get(i)).getUser().followers + " Followers - " + map.get(list.get(i)).text);
             System.out.println(list.get(i));
             //System.out.println("User :" + );
             try {
-                List tweets = tweetLoader.retrieveUserTweets(list.get(i));
+                List<Status> tweets = tweetLoader.getStatus(list.get(i));
 
-                for(Object tweetInfo: tweets) {
-                    System.out.println("\t " + tweetInfo);
+                for(Status status: tweets) {
+                    System.out.println("\t " + status.getFavoriteCount() );
                 }
             }
             catch (Exception e) {

@@ -68,14 +68,21 @@ public class TweetLoader {
             return map;
     }
 
+    public void retrieveLimit() throws TwitterException {
+        //int	totalTweets = 0;
+        //long maxID = -1;
+        Map<String, RateLimitStatus> rateLimitStatus = twitter.getRateLimitStatus("search");
+        RateLimitStatus searchTweetsRateLimit = rateLimitStatus.get("/search/tweets");
+        System.out.printf("You have %d calls remaining out of %d, Limit resets in %d seconds\n",
+                searchTweetsRateLimit.getRemaining(),
+                searchTweetsRateLimit.getLimit(),
+                searchTweetsRateLimit.getSecondsUntilReset());
+    }
 
-    public List retrieveUserTweets(String name) throws TwitterException {
-        List<String> out = new LinkedList<>();
+
+    public List<Status> getStatus(String name) throws TwitterException {
         Paging paging = new Paging(1, 100);
         List<Status> statuses = this.twitter.getUserTimeline(name, paging);
-        for(Status status : statuses) {
-            out.add(status.getText());
-        }
-        return out;
+        return statuses;
     }
 }
