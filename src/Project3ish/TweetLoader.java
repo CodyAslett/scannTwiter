@@ -2,6 +2,7 @@ package Project3ish;
 
 import com.google.gson.Gson;
 import twitter4j.*;
+import twitter4j.User;
 import twitter4j.conf.ConfigurationBuilder;
 
 import java.util.*;
@@ -67,6 +68,9 @@ public class TweetLoader {
         }
             return map;
     }
+    public List<Status> scanHash(String hashtag) throws TwitterException {
+        return twitter.search(new Query(hashtag)).getTweets();
+    }
 
     public void retrieveLimit() throws TwitterException {
         //int	totalTweets = 0;
@@ -82,7 +86,80 @@ public class TweetLoader {
 
     public List<Status> getStatus(String name) throws TwitterException {
         Paging paging = new Paging(1, 100);
-        List<Status> statuses = this.twitter.getUserTimeline(name, paging);
-        return statuses;
+            List<Status> out = new LinkedList<>();
+
+            IDs friendsIDs = twitter.getFriendsIDs(name, -1);
+            System.out.println(twitter.showUser(name).getName() + "\n\t");
+            do {
+                for (long IdOfAFriend : friendsIDs.getIDs()) {
+                    System.out.println(twitter.showUser(IdOfAFriend).getName());
+                    out.add(twitter.showUser(IdOfAFriend).getStatus());
+                }
+            } while (friendsIDs.hasNext());
+
+            return out;
+        }
+
+        public List<User> getFollowers(Long ID) throws TwitterException {
+            List<User> out = new LinkedList<>();
+
+            IDs friendsIDs = twitter.getFriendsIDs(ID, -1);
+            System.out.println(twitter.showUser(ID).getName() + "\n\t");
+            do {
+                for(long IdOfAFriend: friendsIDs.getIDs()) {
+                    System.out.println(twitter.showUser(IdOfAFriend).getName());
+                    out.add(twitter.showUser(IdOfAFriend));
+                }
+            } while (friendsIDs.hasNext());
+
+            return out;
+        }
+
+    public List<User> getFollowers(String userName) throws TwitterException {
+        List<User> out = new LinkedList<>();
+
+        IDs friendsIDs = twitter.getFriendsIDs(userName, -1);
+        System.out.println(twitter.showUser(userName).getName() + "\n\t");
+        do {
+            for(long IdOfAFriend: friendsIDs.getIDs()) {
+                System.out.println(twitter.showUser(IdOfAFriend).getName());
+                out.add(twitter.showUser(IdOfAFriend));
+            }
+        } while (friendsIDs.hasNext());
+
+        return out;
+    }
+
+    public List<User> getFollowers(User user) throws TwitterException {
+        List<User> out = new LinkedList<>();
+
+        IDs friendsIDs = twitter.getFriendsIDs(user.getId(), -1);
+        System.out.println(twitter.showUser(user.getId()).getName() + "\n\t");
+        do {
+            for(long IdOfAFriend: friendsIDs.getIDs()) {
+                System.out.println(twitter.showUser(IdOfAFriend).getName());
+                out.add(twitter.showUser(IdOfAFriend));
+            }
+        } while (friendsIDs.hasNext());
+
+        return out;
+    }
+
+    public User getUser(Long id) throws TwitterException {
+        return twitter.showUser(id);
+    }
+    public User getUser(String name) throws TwitterException {
+        return twitter.showUser(name);
+    }
+
+    public List<Status> getTimeline(User user) throws TwitterException {
+        List<Status> out = new LinkedList<>();
+
+        for(int i = 1; i< 10; i++) {
+            Paging paging = new Paging(i, 100);
+            List<Status> temp = twitter.getUserTimeline(user.getName(), paging);
+            out.addAll(temp);
+        }
+        return out;
     }
 }

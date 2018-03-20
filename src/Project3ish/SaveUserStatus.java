@@ -1,9 +1,8 @@
 package Project3ish;
 
-import twitter4j.GeoLocation;
-import twitter4j.Place;
-import twitter4j.Status;
-import twitter4j.TwitterException;
+import com.google.gson.Gson;
+import twitter4j.*;
+import twitter4j.User;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -11,6 +10,10 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 import java.io.PrintWriter;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.*;
 
 public class SaveUserStatus {
@@ -172,4 +175,26 @@ public class SaveUserStatus {
 
 
     }
+    // save user tweets ~Cody
+    public void saveUser(User user) throws TwitterException {
+
+        for(Status status: tweetLoader.getTimeline(user) ) {
+            appendToFile("tweets.txt", status.toString());
+        }
+    }
+
+    public void appendToFile(String fileName, String content) {
+        try {
+            // if file is non existant
+            File f = new File(fileName);
+            if (!f.exists() || f.isDirectory()) {
+                f.createNewFile();
+            }
+            // append to file
+            Files.write(Paths.get(fileName), content.getBytes(), StandardOpenOption.APPEND);
+        } catch (Exception e) {
+            System.out.println("Error Appending to File error was : " + e);
+        }
+    }
+
 }
